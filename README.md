@@ -1,70 +1,18 @@
-# Getting Started with Create React App
+So in this partricular project the Html and index.css and a skeleton index.js was given to us.(Basically a grid was on view in LH:3000) Then through a tutorial i was able to finish the game using react JSX.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+I first learned to "Pass Data Through Props". In the Board’s renderSquare method, I changed the code to pass a prop called value to the Square. I changed the Square’s render method to show that value by replacing {/* TODO */} with {this.props.value} Where we seen a number in each square in the rendered output where it was previously blank squares. Basically passing a prop from a parent (Board) to a child (Square).
 
-## Available Scripts
+Next thing I had to do was make an Interactive Component, where we created a button with an onClick function. I tested this by creating an alert window in my browser when a button was clicked. The next step i had to cover was to get the Square to "remember" it got clicked, and fill it with an “X” mark. For this i got introduced to "state". I learned that React components can have state by setting this.state in their constructors. So first I had to add a constructor to the class to inialize the state. In JavaScript classes, you need to always call super when defining the constructor of a subclass. All React component classes that have a constructor should start with a super(props) call.I changed the Square’s render method to display the current state’s value when clicked, Replaced this.props.value with this.state.value inside the <button> tag. Replaced the onClick={...} event handler with onClick={() => this.setState({value: 'X'})} By calling this.setState from an onClick handler in the Square’s render method, I telling React to re-render that Square whenever its <button> is clicked. After the update, the Square’s this.state.value will be 'X', so I’ll see the X on the game board.
 
-In the project directory, you can run:
+I now have the basic building blocks for a tic-tac-toe game. To have a complete game, I now need to alternate placing “X”s and “O”s on the board, and I need a way to determine a winner.
 
-### `npm start`
+Currently, each Square component maintains the game’s state. To check for a winner, I will maintain the value of each of the 9 squares in one location.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+We may think that Board should just ask each Square for the Square’s state. Although this approach is possible in React, this is discouraged because the code becomes difficult to understand, susceptible to bugs, and hard to refactor. Instead, the best approach is to store the game’s state in the parent Board component instead of in each Square. The Board component can tell each Square what to display by passing a prop, just like we did when I passed a number to each Square.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+To collect data from multiple children, or to have two child components communicate with each other, you need to declare the shared state in their parent component instead. The parent component can pass the state back down to the children by using props; this keeps the child components in sync with each other and with the parent component. Lifting state into a parent component is common when React components are refactored.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+In the beginning, I passed the value prop down from the Board to show numbers from 0 to 8 in every Square. In a different previous step, I replaced the numbers with an “X” mark determined by Square’s own state. This is why Square currently ignores the value prop passed to it by the Board. I then used the prop passing mechanism again. I modified the Board to instruct each individual Square about its current value ('X', 'O', or null). I have already defined the squares array in the Board’s constructor, and I then modified the Board’s renderSquare method to read from it. Each Square will now receive a value prop that will either be 'X', 'O', or null for empty squares. Next, I need to change what happens when a Square is clicked. The Board component now maintains which squares are filled. I need to create a way for the Square to update the Board’s state. Since state is considered to be private to a component that defines it, I cannot update the Board’s state directly from Square. Instead, I’ll pass down a function from the Board to the Square, and I’ll have Square call that function when a square is clicked. Now I am passing down two props from Board to Square: value and onClick. The onClick prop is a function that Square can call when clicked. I’ll make the following changes to Square:
+Replace this.state.value with this.props.value in Square’s render method
+Replace this.setState() with this.props.onClick() in Square’s render method
+Delete the constructor from Square because Square no longer keeps track of the game’s state.
